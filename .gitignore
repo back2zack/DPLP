@@ -1,0 +1,5 @@
+ECHO is on.
+# .gitignore
+deeplearning/
+*.pyc
+__pycache__/
