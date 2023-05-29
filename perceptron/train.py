@@ -4,6 +4,10 @@ import torch.nn as  nn
 from Perceptron_Model import Model
 from sklearn import  datasets
 
+
+
+
+
 # prepare data  
 def Generate():
     num_pts = 100
@@ -19,19 +23,15 @@ def Generate():
     
     return points, y, labels
 
-#initialize a Model with 2 inputs and 1 output features
-torch.manual_seed(2)
-M_Model = Model(2,1)
-
 
 # train function 
-
-def train_():
-    x_data, _ , y_data = Generate()
+def train_(Model:Model, data_key :str):
+    data_dict = Model.data
+    x_data, _ , y_data = data_dict[data_key]
     # set the learning rate 
-    learning_rate = 0.5
+    learning_rate = Model.learning_rate
     #  set the epochs
-    epochs = 100
+    epochs = Model.epochs
     # set the loss function
     criterion = nn.BCELoss()
     # optimizer
@@ -46,16 +46,33 @@ def train_():
         # calculate  loss
         loss = criterion(y_pred, y_data)
         Losses.append(loss.item())
-        print("epoch:",i ,"loss:", loss.item())
+        #print("epoch:",i ,"loss:", loss.item())
         # third calculate the gradient
         optimizer.zero_grad()
         loss.backward()
         # update  the parametrs
         optimizer.step()
 
-train_()
 
-# extract weight and bias
 
-def get_parameters():
-    return None
+#initialize a Model with 2 inputs and 1 output features
+torch.manual_seed(2)
+M_Model = Model(2,1)
+
+# generate  the training data for  our model
+Data = Generate() 
+
+# append that data to the model class-> 
+# because if we generate new data poitns
+# we need to retrain the model for the new data points 
+M_Model.genreated_data(Data,"data1")
+
+
+# train the model
+train_(M_Model, "data1")
+
+# Save the model's state dictionary to use these parameters in the plot file 
+torch.save( {
+    'model_state_dict' :M_Model.state_dict(),
+    'Data': M_Model.data,
+    },"Model1")
